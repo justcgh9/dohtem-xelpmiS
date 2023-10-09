@@ -4,7 +4,7 @@ import java.util.Scanner;
 class Matrix {
     private int nCol;
     private int nRow;
-    private double[][] matrix;
+    protected double[][] matrix;
 
     public Matrix(int nRow, int nCol) {
         this.nCol = nCol;
@@ -147,14 +147,179 @@ class Matrix {
         return s;
     }
 
+    public Matrix subtract(Matrix cN) {
+        if(this.nCol != cN.getnCol() || this.nRow != cN.getnRow()) {
+            throw new IllegalArgumentException("Matrices must have the same dimensions");
+        }
+        Matrix difference = new Matrix(this.nRow, this.nCol);
+        for(int i = 0; i < nRow; i++) {
+            for(int j = 0; j < nCol; j++) {
+                difference.matrix[i][j] = this.matrix[i][j] - cN.matrix[i][j];
+            }
+        }
+        return difference;
+    }
+
+    public int rank() {
+        int rank = 0;
+        Matrix reducedRowEchelonForm = this.reducedRowEchelonForm();
+        for(int i = 0; i < this.nRow; i++) {
+            if(reducedRowEchelonForm.matrix[i][i] != 0) {
+                rank++;
+                break;
+            }
+        }
+        return rank;
+    }
+
+    public Matrix transpose() {
+        double[][] transpose = new double[this.nCol][this.nRow];
+        for(int i = 0; i < this.nRow; i++) {
+            for(int j = 0; j < this.nCol; j++) {
+                transpose[j][i] = this.matrix[i][j];
+            }
+        }
+        return new Matrix(transpose);
+    }
+    public Matrix reducedRowEchelonForm() {
+
+        Matrix reducedRowEchelonForm = new Matrix(this.matrix);
+        int pivot = 0;
+        for(int i = 0; i < this.nRow; i++) {
+            if(pivot >= this.nCol) {
+                break;
+            }
+            if(reducedRowEchelonForm.matrix[i][pivot] == 0) {
+                for(int j = i + 1; j < this.nRow; j++) {
+                    if(reducedRowEchelonForm.matrix[j][pivot] != 0) {
+                        reducedRowEchelonForm.swapRows(i, j);
+                        break;
+                    }
+                }
+            }
+            if(reducedRowEchelonForm.matrix[i][pivot] != 0) {
+                reducedRowEchelonForm.multiplyRow(i, 1/reducedRowEchelonForm.matrix[i][pivot]);
+                for(int j = 0; j < this.nRow; j++) {
+                    if(i != j && reducedRowEchelonForm.matrix[j][pivot] != 0) {
+                        reducedRowEchelonForm.addRow(i, j, -reducedRowEchelonForm.matrix[j][pivot]);
+                    }
+                }
+                pivot++;
+            }
+        }
+        return reducedRowEchelonForm;
+    }
+
+    public void swapRows(int i, int j) {
+        double[] temp = this.matrix[i];
+        this.matrix[i] = this.matrix[j];
+        this.matrix[j] = temp;
+    }
+
+    public void multiplyRow(int i, double scalar) {
+        for(int j = 0; j < this.nCol; j++) {
+            this.matrix[i][j] *= scalar;
+        }
+    }
+
+    public static Matrix identityMatrix(int n) {
+        Matrix identityMatrix = new Matrix(n, n);
+        for(int i = 0; i < n; i++) {
+            identityMatrix.matrix[i][i] = 1;
+        }
+        return identityMatrix;
+    }
+
+    public void addRow(int i, int j, double scalar) {
+        for(int k = 0; k < this.nCol; k++) {
+            this.matrix[j][k] += scalar*this.matrix[i][k];
+        }
+    }
+
+    public Matrix getColumn(int i) {
+        Matrix column = new Matrix(this.nRow, 1);
+        for(int j = 0; j < this.nRow; j++) {
+            column.matrix[j][0] = this.matrix[j][i];
+        }
+        return column;
+    }
+
+    public Matrix getRow(int i) {
+        Matrix row = new Matrix(1, this.nCol);
+        for(int j = 0; j < this.nCol; j++) {
+            row.matrix[0][j] = this.matrix[i][j];
+        }
+        return row;
+    }
+
+    public void setRow(double[] row, int i) {
+        this.matrix[i] = row;
+    }
+
+    public void setCol(double[] col, int i) {
+        for(int j = 0; j < this.nRow; j++) {
+            this.matrix[j][i] = col[j];
+        }
+    }
 }
 
 public class Main {
 
 
-        public static void revisedSimplexAlgorithm(Matrix a, Matrix b, Matrix c,int numRows, int numCols, double accuracy) {
+        public static void revisedSimplexAlgorithm(Matrix a, Matrix b, Matrix c,int numRows, int numCols, double accuracy, int [] pivots) {
+            Matrix xB0 = new Matrix(numRows, numRows);
+            int pivotIndexes[] = new int[numRows];
+            for(int i = 0; i < numRows; i++) {
+                for(int j = 0; j < numCols; j++) {
+                    if(pivots[j] == i) {
+                        xB0.setCol(a.getColumn(j).matrix[0], i);
+                        pivotIndexes[i] = j;
+                    }
+                }
+            }
+            Matrix cB0 = new Matrix(numRows, 1);
+            for(int i = 0; i < numRows; i++) {
+                cB0.matrix[i][0] = c.matrix[pivotIndexes[i] - 1][0];
+            }
+
+            Matrix B0 = Matrix.identityMatrix(numRows);
+            Matrix B0Inverse = B0;
+
+
+
+
 
         }
+
+        public static int[] checkIdentity(Matrix a, int numRows, int numCols) {
+            boolean identity = false;
+            int[] pivots = new int[numCols];
+            int numPivots = 0;
+            for(int i = 0; i < numCols; i++) {
+                int zeroCounter = 0;
+                int oneCounter = 0;
+                for(int j = 0 ; j < numRows; j++) {
+                    if(a.matrix[j][i] ==  0) {
+                        zeroCounter++;
+                    } else if(a.matrix[j][i] == 1) {
+                        oneCounter++;
+                    }
+                }
+                if(oneCounter == 1 && zeroCounter == numRows - 1) {
+
+                    pivots[i] = numPivots + 1;
+                    numPivots++;
+                } else {
+                    pivots[i] = 0;
+                }
+            }
+            if(numPivots == numRows) {
+                return pivots;
+            } else {
+                return null;
+            }
+        }
+
 
         public static void main(String[] args) {
             Scanner scanner = new Scanner(System.in);
@@ -188,6 +353,13 @@ public class Main {
 
             System.out.print("Enter the approximation accuracy: ");
             double accuracy = Double.parseDouble(scanner.next());
+            int [] pivots = checkIdentity(new Matrix(A), numRows, numCols);
+            if(pivots == null) {
+                System.out.println("No valid basis in the given LPP");
+                System.exit(0);
+            }
+
+            revisedSimplexAlgorithm(new Matrix(A), new Matrix(b), new Matrix(C), numRows, numCols, accuracy, pivots);
 
 
 
