@@ -89,7 +89,7 @@ class Matrix {
             }
         }
 
-        return inverse;
+        return inverse.transpose();
 
     }
 
@@ -284,10 +284,14 @@ public class Main {
 
 
             Matrix B0 = Matrix.identityMatrix(numRows);
-            Matrix B0Inverse = B0;
+
+            Matrix B0Inverse;
+
+            while (true) {
+            B0Inverse = B0.inverse();
 
             xB0 = B0Inverse.multiply(b);
-//            while (true) {
+
                 Matrix deltas = cB0.transpose().multiply(B0Inverse).multiply(a).subtract(c.transpose());
                 int enteringIndex = 0;
 
@@ -297,14 +301,19 @@ public class Main {
                     }
                 }
                 if(deltas.matrix[0][enteringIndex] >= 0) {
-//                    break;
+                    double answer = cB0.transpose().multiply(B0Inverse).multiply(b).matrix[0][0];
+                    System.out.println("Optimal solution found: " + answer);
                 }
 
                 int leavingIndex = 0;
+                int trueLeavingIndex = 0;
                 double minRatio = Double.MAX_VALUE;
                 for(int i = 0; i < numRows; i++) {
                     if(xB0.matrix[i][0] > 0) {
-                        double ratio = xB0.matrix[i][0]/a.matrix[enteringIndex][i];
+                        double ratio1 = xB0.matrix[i][0];
+                        double ratio2=a.matrix[i][enteringIndex];
+                        double ratio = ratio1/ratio2;
+                        System.out.println("Ratio1: " + ratio1 + " Ratio2: " + ratio2 + " Ratio: " + ratio);
                         if(ratio < minRatio) {
                             minRatio = ratio;
                             leavingIndex = i;
@@ -312,25 +321,13 @@ public class Main {
                     }
                 }
 
-            System.out.println("Entering index: " + enteringIndex + "Leaving index: " + leavingIndex);
+                trueLeavingIndex = pivotIndexes[leavingIndex];
+                pivotIndexes[leavingIndex] = enteringIndex;
 
-                Matrix e = new Matrix(numRows, 1);
-                e.matrix[leavingIndex][0] = 1;
-//                Matrix d = B0Inverse.multiply(a.getColumn(enteringIndex));
-                double theta = b.matrix[leavingIndex][0]/xB0.matrix[leavingIndex][0];
-                Matrix xB1 = new Matrix(numRows, 1);
-                for(int i = 0; i < numRows; i++) {
-//                    xB1.matrix[i][0] = xB0.matrix[i][0] - theta*d.matrix[i][0];
-                }
-                Matrix cB1 = new Matrix(numRows, 1);
-                for(int i = 0; i < numRows; i++) {
-//                    cB1.matrix[i][0] = cB0.matrix[i][0] - theta*deltas.matrix[0][enteringIndex]*d.matrix[i][0];
-                }
+                B0.setCol(a.getColumn(enteringIndex), leavingIndex);
+                cB0.matrix[leavingIndex][0] = c.matrix[enteringIndex][0];
 
-
-
-//            }
-
+          }
 
 
         }
