@@ -155,9 +155,35 @@ public class Main {
             Scanner scanner = new Scanner(System.in);
 
             System.out.print("Enter the number of constraints: ");
-            int nRows = scanner.nextInt();
+            int numRows = scanner.nextInt();
             System.out.print("Enter the number of variables: ");
-            int nCols = scanner.nextInt();
+            int numCols = scanner.nextInt();
+            double[][] A = new double[numRows][numCols];
+            System.out.println("Enter the coefficients of the constraint matrix A:");
+            for (int i = 0; i < numRows; i++) {
+                for (int j = 0; j < numCols; j++) {
+                    A[i][j] = scanner.nextDouble();
+                }
+            }
+
+
+            double[] b = new double[numRows];
+            System.out.println("Enter the right-hand side vector b:");
+            for (int i = 0; i < numRows; i++) {
+                b[i] = scanner.nextDouble();
+            }
+
+
+            double[] C = new double[numCols];
+            System.out.println("Enter the coefficients of the objective function vector C:");
+            for (int j = 0; j < numCols; j++) {
+                C[j] = scanner.nextDouble();
+            }
+
+
+            System.out.print("Enter the approximation accuracy: ");
+            double accuracy = Double.parseDouble(scanner.next());
+
 
 
         }
