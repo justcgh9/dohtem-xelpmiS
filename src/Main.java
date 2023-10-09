@@ -303,6 +303,7 @@ public class Main {
                 if(deltas.matrix[0][enteringIndex] >= 0) {
                     double answer = cB0.transpose().multiply(B0Inverse).multiply(b).matrix[0][0];
                     System.out.println("Optimal solution found: " + answer);
+                    return;
                 }
 
                 int leavingIndex = 0;
@@ -313,7 +314,7 @@ public class Main {
                         double ratio1 = xB0.matrix[i][0];
                         double ratio2=a.matrix[i][enteringIndex];
                         double ratio = ratio1/ratio2;
-                        System.out.println("Ratio1: " + ratio1 + " Ratio2: " + ratio2 + " Ratio: " + ratio);
+//                        System.out.println("Ratio1: " + ratio1 + " Ratio2: " + ratio2 + " Ratio: " + ratio);
                         if(ratio < minRatio) {
                             minRatio = ratio;
                             leavingIndex = i;
