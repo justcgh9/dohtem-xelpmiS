@@ -236,10 +236,10 @@ class Matrix {
         }
     }
 
-    public Matrix getColumn(int i) {
-        Matrix column = new Matrix(this.nRow, 1);
+    public double[] getColumn(int i) {
+        double[] column = new double[this.nRow];
         for(int j = 0; j < this.nRow; j++) {
-            column.matrix[j][0] = this.matrix[j][i];
+            column[j] = this.matrix[j][i];
         }
         return column;
     }
@@ -271,21 +271,65 @@ public class Main {
             int pivotIndexes[] = new int[numRows];
             for(int i = 0; i < numRows; i++) {
                 for(int j = 0; j < numCols; j++) {
-                    if(pivots[j] == i) {
-                        xB0.setCol(a.getColumn(j).matrix[0], i);
+                    if(pivots[j] == i + 1) {
+//                        xB0.setCol(a.getColumn(j), i);
                         pivotIndexes[i] = j;
                     }
                 }
             }
             Matrix cB0 = new Matrix(numRows, 1);
             for(int i = 0; i < numRows; i++) {
-                cB0.matrix[i][0] = c.matrix[pivotIndexes[i] - 1][0];
+                cB0.matrix[i][0] = c.matrix[pivotIndexes[i]][0];
             }
+
 
             Matrix B0 = Matrix.identityMatrix(numRows);
             Matrix B0Inverse = B0;
 
+            xB0 = B0Inverse.multiply(b);
+//            while (true) {
+                Matrix deltas = cB0.transpose().multiply(B0Inverse).multiply(a).subtract(c.transpose());
+                int enteringIndex = 0;
 
+                for(int i = 0; i < deltas.getnCol(); i++) {
+                    if(deltas.matrix[0][i] < deltas.matrix[0][enteringIndex]) {
+                        enteringIndex = i;
+                    }
+                }
+                if(deltas.matrix[0][enteringIndex] >= 0) {
+//                    break;
+                }
+
+                int leavingIndex = 0;
+                double minRatio = Double.MAX_VALUE;
+                for(int i = 0; i < numRows; i++) {
+                    if(xB0.matrix[i][0] > 0) {
+                        double ratio = xB0.matrix[i][0]/a.matrix[enteringIndex][i];
+                        if(ratio < minRatio) {
+                            minRatio = ratio;
+                            leavingIndex = i;
+                        }
+                    }
+                }
+
+            System.out.println("Entering index: " + enteringIndex + "Leaving index: " + leavingIndex);
+
+                Matrix e = new Matrix(numRows, 1);
+                e.matrix[leavingIndex][0] = 1;
+//                Matrix d = B0Inverse.multiply(a.getColumn(enteringIndex));
+                double theta = b.matrix[leavingIndex][0]/xB0.matrix[leavingIndex][0];
+                Matrix xB1 = new Matrix(numRows, 1);
+                for(int i = 0; i < numRows; i++) {
+//                    xB1.matrix[i][0] = xB0.matrix[i][0] - theta*d.matrix[i][0];
+                }
+                Matrix cB1 = new Matrix(numRows, 1);
+                for(int i = 0; i < numRows; i++) {
+//                    cB1.matrix[i][0] = cB0.matrix[i][0] - theta*deltas.matrix[0][enteringIndex]*d.matrix[i][0];
+                }
+
+
+
+//            }
 
 
 
