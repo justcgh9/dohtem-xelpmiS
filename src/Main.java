@@ -151,6 +151,11 @@ class Matrix {
 
 public class Main {
 
+
+        public static void revisedSimplexAlgorithm(Matrix a, Matrix b, Matrix c,int numRows, int numCols, double accuracy) {
+
+        }
+
         public static void main(String[] args) {
             Scanner scanner = new Scanner(System.in);
 
