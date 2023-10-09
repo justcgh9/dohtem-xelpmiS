@@ -405,4 +405,11 @@ public class Main {
 
 
         }
+
+    /**
+     * TODO-s
+     * 1. Check all b-s to be non-negative
+     * 2. Check all c-s to be non-zero
+     * 3. Add functionality for accuracy and rounding.
+     */
 }
